@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String PUBLISHABLE_KEY = "pk_test_vNISRaXJycWwVmzoxTwmq57M";
 
     // the stripe handler -be
+    // TODO: 10/10/17 replace the  http://192.168.1.6:8080/ with your 
     private static final String BACKEND_URL = "http://192.168.1.6:8080/_logic/payment/stripe";
 
     // dummy auth data
