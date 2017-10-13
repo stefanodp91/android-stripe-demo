@@ -1,6 +1,5 @@
 package it.stefanodp91.android.stripedemo;
 
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +32,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // dummy auth data
     private static final String USERNAME = "dev@address.com"; // user email
     private static final String PASSWORD = "secret"; // user password
+
+    // dummy payment data
+    private static final String JOB_ID = "5911a3884ed04396f429949e";
+    private static final String OFFER_ID = "5911a3b7bfe0ca2b76405b62";
 
     // dummy payment data
     // for amount see this link:
@@ -138,7 +141,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Uri.Builder builder = new Uri.Builder()
                 .appendQueryParameter("stripeToken", token)
                 .appendQueryParameter("amount", String.valueOf(amount))
-                .appendQueryParameter("currency", currency);
+                .appendQueryParameter("currency", currency)
+                .appendQueryParameter("jobid", JOB_ID)
+                .appendQueryParameter("offerid", OFFER_ID);
         String queryParams = builder.build().getEncodedQuery();
 
         // start the POST request
@@ -161,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onResponseRetrievedError(Exception e) {
 
-                    mResponseView.setTextColor(Color.parseColor("#F44336"));
                     mResponseView.setText(e.toString());
 
                     mProgress.setVisibility(View.GONE); // dismiss the progress
