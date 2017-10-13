@@ -115,9 +115,9 @@ class HttpPostTask extends AsyncTask<Object, String, String> {
         Log.i(TAG, "onPostExecute");
 
         if (mException != null)
-            callback.onResponseRetrievedSuccess(response);
-        else
             callback.onResponseRetrievedError(mException);
+        else
+            callback.onResponseRetrievedSuccess(response);
     }
 
 

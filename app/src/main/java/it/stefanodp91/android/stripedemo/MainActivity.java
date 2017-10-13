@@ -1,5 +1,6 @@
 package it.stefanodp91.android.stripedemo;
 
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -166,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onResponseRetrievedError(Exception e) {
 
+                    mResponseView.setTextColor(Color.parseColor("#F44336"));
                     mResponseView.setText(e.toString());
 
                     mProgress.setVisibility(View.GONE); // dismiss the progress
