@@ -24,9 +24,11 @@ class HttpPostTask extends AsyncTask<Object, String, String> {
     private HttpURLConnection urlConnection;
     private byte[] outputBytes;
     private String queryParams;
-    private String ResponseData;
+    private String responseData;
     private OnResponseRetrievedCallback callback;
     private String mAuth;
+    private Exception mException;
+
 
     public HttpPostTask(String queryParams, OnResponseRetrievedCallback callback) {
         this.queryParams = queryParams;
@@ -62,20 +64,29 @@ class HttpPostTask extends AsyncTask<Object, String, String> {
             // 200 represents HTTP OK
             if (statusCode == HttpsURLConnection.HTTP_OK) {
                 inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                ResponseData = convertStreamToString(inputStream);
+                responseData = convertStreamToString(inputStream);
+            } else if (statusCode == HttpsURLConnection.HTTP_NOT_FOUND) {
+                responseData = "server returns :" + HttpsURLConnection.HTTP_NOT_FOUND;
+                mException = new Exception(responseData);
+            } else if (statusCode == HttpsURLConnection.HTTP_BAD_REQUEST) {
+                responseData = "server returns :" + HttpsURLConnection.HTTP_BAD_REQUEST;
+                mException = new Exception(responseData);
+            } else if (statusCode == HttpsURLConnection.HTTP_FORBIDDEN) {
+                responseData = "server returns :" + HttpsURLConnection.HTTP_FORBIDDEN;
+                mException = new Exception(responseData);
             } else {
-
-                ResponseData = null;
+                mException = new Exception("generic exception");
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            mException = e;
+            responseData = e.getMessage();
         }
 
-        return ResponseData;
+        return responseData;
     }
 
-    public static String convertStreamToString(InputStream is) {
+    public String convertStreamToString(InputStream is) {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
@@ -86,7 +97,8 @@ class HttpPostTask extends AsyncTask<Object, String, String> {
                 sb.append((line + "\n"));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            mException = e;
+            responseData = e.getMessage();
         } finally {
             try {
                 is.close();
@@ -102,10 +114,10 @@ class HttpPostTask extends AsyncTask<Object, String, String> {
     protected void onPostExecute(String response) {
         Log.i(TAG, "onPostExecute");
 
-        if (response != null && !response.isEmpty())
+        if (mException != null)
             callback.onResponseRetrievedSuccess(response);
         else
-            callback.onResponseRetrievedError(new Exception("response is not valid"));
+            callback.onResponseRetrievedError(mException);
     }
 
 
