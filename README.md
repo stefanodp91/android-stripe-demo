@@ -12,3 +12,13 @@ you have just to insert the above data and press the "save" button
 
 the handler will return a response (positive or negative) of the payment
 
+## CHANGELOG
+
+### 1.0 
+
+- released sample
+
+### 1.0.1 
+
+- handled server exceptions
+

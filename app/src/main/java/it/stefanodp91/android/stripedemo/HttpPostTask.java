@@ -20,6 +20,9 @@ import javax.net.ssl.HttpsURLConnection;
 class HttpPostTask extends AsyncTask<Object, String, String> {
     private static final String TAG = HttpPostTask.class.getName();
 
+    // Too many requests hit the API too quickly.
+    private static final int TOO_MANY_REQUESTS = 409;
+
     private InputStream inputStream;
     private HttpURLConnection urlConnection;
     private byte[] outputBytes;
@@ -61,21 +64,29 @@ class HttpPostTask extends AsyncTask<Object, String, String> {
             // Get Response and execute WebService request
             int statusCode = urlConnection.getResponseCode();
 
-            // 200 represents HTTP OK
-            if (statusCode == HttpsURLConnection.HTTP_OK) {
+            // source :
+            // https://stripe.com/docs/api?lang=java#errors
+            if (statusCode == HttpURLConnection.HTTP_OK) {
                 inputStream = new BufferedInputStream(urlConnection.getInputStream());
                 responseData = convertStreamToString(inputStream);
-            } else if (statusCode == HttpsURLConnection.HTTP_NOT_FOUND) {
-                responseData = "server returns :" + HttpsURLConnection.HTTP_NOT_FOUND;
+            } else if (statusCode == HttpsURLConnection.HTTP_PAYMENT_REQUIRED) {
+                responseData = "server returns :" + HttpsURLConnection.HTTP_PAYMENT_REQUIRED + "\nThe parameters were valid but the request failed.";
+                mException = new Exception(responseData);
+            } else if (statusCode == TOO_MANY_REQUESTS) {
+                responseData = "server returns :" + TOO_MANY_REQUESTS + "\nToo many requests hit the API too quickly.";
+                mException = new Exception(responseData);
+            } else if (statusCode == HttpsURLConnection.HTTP_INTERNAL_ERROR) {
+                responseData = "server returns :" + HttpsURLConnection.HTTP_INTERNAL_ERROR + "\nSomething went wrong on Stripe's end.";
                 mException = new Exception(responseData);
             } else if (statusCode == HttpsURLConnection.HTTP_BAD_REQUEST) {
-                responseData = "server returns :" + HttpsURLConnection.HTTP_BAD_REQUEST;
+                responseData = "server returns :" + HttpsURLConnection.HTTP_BAD_REQUEST + "\nThe request was unacceptable, often due to missing a required parameter.";
                 mException = new Exception(responseData);
-            } else if (statusCode == HttpsURLConnection.HTTP_FORBIDDEN) {
-                responseData = "server returns :" + HttpsURLConnection.HTTP_FORBIDDEN;
+            } else if (statusCode == HttpsURLConnection.HTTP_NOT_FOUND) {
+                responseData = "server returns :" + HttpsURLConnection.HTTP_NOT_FOUND + "\nThe requested resource doesn't exist.";
                 mException = new Exception(responseData);
             } else {
-                mException = new Exception("generic exception");
+                responseData = "server returns :" + HttpsURLConnection.HTTP_INTERNAL_ERROR + "\nSomething went wrong on Stripe's end.";
+                mException = new Exception(responseData);
             }
 
         } catch (Exception e) {
