@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // the stripe publishable key
     // TODO: 18/10/17 replace with a public production key
-    private static final String PUBLISHABLE_KEY = "pk_test_eWCjO1bX5Ls4UacBcxUMFR5w";
+    private static final String PUBLISHABLE_KEY = "pk_test_Kw0OhxztY1RfT5DKRvWlm5pP"; // ch public test key
 
     // dummy auth data
     // TODO: 18/10/17 replace with valid user data
