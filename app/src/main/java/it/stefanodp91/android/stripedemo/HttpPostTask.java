@@ -21,19 +21,19 @@ class HttpPostTask extends AsyncTask<Object, String, String> {
     private static final String TAG = HttpPostTask.class.getName();
 
     // Too many requests hit the API too quickly.
-    private static final int TOO_MANY_REQUESTS = 409;
+    private static final int TOO_MANY_REQUESTS = 429;
 
     private InputStream inputStream;
     private HttpURLConnection urlConnection;
     private byte[] outputBytes;
     private String queryParams;
     private String responseData;
-    private OnResponseRetrievedCallback callback;
+    private OnResponseRetrievedCallback<String> callback;
     private String mAuth;
     private Exception mException;
 
 
-    public HttpPostTask(String queryParams, OnResponseRetrievedCallback callback) {
+    public HttpPostTask(String queryParams, OnResponseRetrievedCallback<String> callback) {
         this.queryParams = queryParams;
         this.callback = callback;
     }
@@ -84,7 +84,12 @@ class HttpPostTask extends AsyncTask<Object, String, String> {
             } else if (statusCode == HttpsURLConnection.HTTP_NOT_FOUND) {
                 responseData = "server returns :" + HttpsURLConnection.HTTP_NOT_FOUND + "\nThe requested resource doesn't exist.";
                 mException = new Exception(responseData);
-            } else {
+            } else if(statusCode == HttpURLConnection.HTTP_BAD_METHOD) {
+                responseData = "server returns :" + HttpsURLConnection.HTTP_BAD_METHOD + "\nNot allowed.";
+                mException = new Exception(responseData);
+            }
+
+            else {
                 responseData = "server returns :" + HttpsURLConnection.HTTP_INTERNAL_ERROR + "\nSomething went wrong on Stripe's end.";
                 mException = new Exception(responseData);
             }
