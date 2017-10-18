@@ -1,5 +1,6 @@
 package it.stefanodp91.android.stripedemo;
 
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,9 @@ import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
 import com.stripe.android.view.CardInputWidget;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by stefanodp91 on 07/10/17.
  */
@@ -24,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = MainActivity.class.getName();
 
     // the croqqer-be stripe payment endpoint
-    private static final String BACKEND_URL = "https://api.croqqer.io/ch-dev/_logic/payment/stripe";
+    private static final String BACKEND_URL = "https://api.croqqer.io/ch-dev/_logic/payment/stripe/";
 
     // the stripe publishable key
     // TODO: 18/10/17 replace with a public production key
@@ -32,13 +36,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // dummy auth data
     // TODO: 18/10/17 replace with valid user data
-    private static final String USERNAME = "dev@address.com"; // user email
-    private static final String PASSWORD = "secret"; // user password
+    private static final String USERNAME = "dummyusername@dummyemail.com"; // user email
+    private static final String PASSWORD = "dummypassword"; // user password
 
     // dummy payment data
     // TODO: 18/10/17 replace with valid job data
-    private static final String JOB_ID = "5911a3884ed04396f429949e";
-    private static final String OFFER_ID = "5911a3b7bfe0ca2b76405b62";
+    private static final String JOB_ID = "59c0e76cabac3b089b066e80";
+    private static final String OFFER_ID = "59c1211ae03dd80005198700";
 
     // dummy payment data
     // for amount see this link:
@@ -149,17 +153,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .appendQueryParameter("offerid", OFFER_ID);
         String queryParams = builder.build().getEncodedQuery();
 
+        Map<String, String> headers = new HashMap<>();
+
         // start the POST request
         HttpPostTask httpPostTask = new HttpPostTask(queryParams, this);
         httpPostTask.setAuth(basicAuth); // set the encoded authorization
+        httpPostTask.addHeaders(getHeaderMap());
         httpPostTask.execute(BACKEND_URL);
+    }
+
+    private Map<String, String> getHeaderMap() {
+        Map<String, String> headerMap = new HashMap<>();
+
+        headerMap.put("x-api-key", "nTF2CgR5hmPIULE3C5Ty2KnmIlvqlbW1pvrxXmCf");
+        headerMap.put("Accept", "image/*,application/hal+json,application/json,*/*");
+
+        return headerMap;
     }
 
     // callback called when the post request returns a response
     @Override
     public void onResponseRetrievedSuccess(String response) {
-        if (mResponseView != null)
-            mResponseView.setText(response.toString());
+        if (mResponseView != null) {
+            mResponseView.setTextColor(Color.parseColor("#9E9E9E")); // text color gray
+            mResponseView.setText(response); // response
+        }
 
         if (mProgress != null)
             mProgress.setVisibility(View.GONE); // dismiss the progress
@@ -168,8 +186,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // callback called when the post request returns an error
     @Override
     public void onResponseRetrievedError(Exception e) {
-        if (mResponseView != null)
-            mResponseView.setText(e.toString());
+        if (mResponseView != null) {
+            mResponseView.setTextColor(Color.parseColor("#F44336")); // text color red
+            mResponseView.setText(e.toString()); // error message
+        }
 
         if (mProgress != null)
             mProgress.setVisibility(View.GONE); // dismiss the progress

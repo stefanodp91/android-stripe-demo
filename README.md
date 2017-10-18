@@ -14,11 +14,20 @@ the handler will return a response (positive or negative) of the payment
 
 ## CHANGELOG
 
-### 1.0 
+### 1.0.2
 
-- released sample
+- handled missing server exceptions
+- fixed stripe endpoint
+- fixed jobid and offerid
+- fixed user data
+- support for minSdkVersion 14
 
 ### 1.0.1 
 
 - handled server exceptions
+
+### 1.0 
+
+- released sample
+
 

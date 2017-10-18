@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -30,6 +31,7 @@ class HttpPostTask extends AsyncTask<Object, String, String> {
     private String responseData;
     private OnResponseRetrievedCallback<String> callback;
     private String mAuth;
+    private Map<String, String> mHeaderMap;
     private Exception mException;
 
 
@@ -51,6 +53,13 @@ class HttpPostTask extends AsyncTask<Object, String, String> {
             // set auth
             if (mAuth != null && !mAuth.isEmpty())
                 urlConnection.setRequestProperty("Authorization", mAuth);
+
+            // add headers
+            if (mHeaderMap != null && mHeaderMap.size() > 0) {
+                for (Map.Entry<String, String> entry : mHeaderMap.entrySet()) {
+                    urlConnection.setRequestProperty(entry.getKey(), entry.getValue());
+                }
+            }
 
             // pass post data
             outputBytes = queryParams.getBytes("UTF-8");
@@ -84,12 +93,10 @@ class HttpPostTask extends AsyncTask<Object, String, String> {
             } else if (statusCode == HttpsURLConnection.HTTP_NOT_FOUND) {
                 responseData = "server returns :" + HttpsURLConnection.HTTP_NOT_FOUND + "\nThe requested resource doesn't exist.";
                 mException = new Exception(responseData);
-            } else if(statusCode == HttpURLConnection.HTTP_BAD_METHOD) {
+            } else if (statusCode == HttpURLConnection.HTTP_BAD_METHOD) {
                 responseData = "server returns :" + HttpsURLConnection.HTTP_BAD_METHOD + "\nNot allowed.";
                 mException = new Exception(responseData);
-            }
-
-            else {
+            } else {
                 responseData = "server returns :" + HttpsURLConnection.HTTP_INTERNAL_ERROR + "\nSomething went wrong on Stripe's end.";
                 mException = new Exception(responseData);
             }
@@ -139,5 +146,9 @@ class HttpPostTask extends AsyncTask<Object, String, String> {
 
     public void setAuth(String auth) {
         mAuth = auth;
+    }
+
+    public void addHeaders(Map<String, String> headerMap) {
+        mHeaderMap = headerMap;
     }
 }
