@@ -1,6 +1,5 @@
 package it.stefanodp91.android.stripedemo;
 
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,34 +19,37 @@ import com.stripe.android.view.CardInputWidget;
  * Created by stefanodp91 on 07/10/17.
  */
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,
+        OnResponseRetrievedCallback<String> {
     private static final String TAG = MainActivity.class.getName();
 
-    // the stripe publishable key
-    private static final String PUBLISHABLE_KEY = "pk_test_vNISRaXJycWwVmzoxTwmq57M";
+    // the croqqer-be stripe payment endpoint
+    private static final String BACKEND_URL = "https://api.croqqer.io/ch-dev/_logic/payment/stripe";
 
-    // the stripe handler -be
-    // TODO: 10/10/17 replace the  http://192.168.1.6:8080/ with your
-    private static final String BACKEND_URL = "http://192.168.1.6:8080/_logic/payment/stripe";
+    // the stripe publishable key
+    // TODO: 18/10/17 replace with a public production key
+    private static final String PUBLISHABLE_KEY = "pk_test_eWCjO1bX5Ls4UacBcxUMFR5w";
 
     // dummy auth data
+    // TODO: 18/10/17 replace with valid user data
     private static final String USERNAME = "dev@address.com"; // user email
     private static final String PASSWORD = "secret"; // user password
 
     // dummy payment data
+    // TODO: 18/10/17 replace with valid job data
     private static final String JOB_ID = "5911a3884ed04396f429949e";
     private static final String OFFER_ID = "5911a3b7bfe0ca2b76405b62";
 
     // dummy payment data
     // for amount see this link:
     // https://stackoverflow.com/questions/35326710/stripe-currency-are-all-amounts-in-cents-100ths-or-does-it-depend-on-curren
+    // TODO: 18/10/17 replace with real payment data
     private static final int amount = 1500; // cents = 15 eur
     private static final String currency = "eur";
 
     // Note that if the data in the widget is either incomplete or
     // fails client-side validity checks, the Card object will be null.
     private CardInputWidget mCardInputWidget;
-
     private Button mSaveBtn;
     private ProgressBar mProgress;
     private TextView mResponseView;
@@ -135,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // perform the http post request
     private void performPOSTRequest(String token) {
 
-        String basicAuth = getBase64BasicAuth(USERNAME, PASSWORD);
+        String basicAuth = Utils.getBase64BasicAuth(USERNAME, PASSWORD);
         Log.d(TAG, "basicAuth: " + basicAuth);
 
         // parameters for the POST request
@@ -148,38 +150,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String queryParams = builder.build().getEncodedQuery();
 
         // start the POST request
-        HttpPostTask httpPostTask = new HttpPostTask(queryParams,
-                onResponseRetrievedCallback);
+        HttpPostTask httpPostTask = new HttpPostTask(queryParams, this);
         httpPostTask.setAuth(basicAuth); // set the encoded authorization
         httpPostTask.execute(BACKEND_URL);
     }
 
-    // callback called when the post request receives a response
-    private OnResponseRetrievedCallback onResponseRetrievedCallback =
-            new OnResponseRetrievedCallback() {
-                @Override
-                public void onResponseRetrievedSuccess(Object response) {
-                    mResponseView.setText(response.toString());
+    // callback called when the post request returns a response
+    @Override
+    public void onResponseRetrievedSuccess(String response) {
+        if (mResponseView != null)
+            mResponseView.setText(response.toString());
 
-                    mProgress.setVisibility(View.GONE); // dismiss the progress
-                }
+        if (mProgress != null)
+            mProgress.setVisibility(View.GONE); // dismiss the progress
+    }
 
-                @Override
-                public void onResponseRetrievedError(Exception e) {
+    // callback called when the post request returns an error
+    @Override
+    public void onResponseRetrievedError(Exception e) {
+        if (mResponseView != null)
+            mResponseView.setText(e.toString());
 
-                    mResponseView.setTextColor(Color.parseColor("#F44336"));
-                    mResponseView.setText(e.toString());
-
-                    mProgress.setVisibility(View.GONE); // dismiss the progress
-                }
-            };
-
-    public static String getBase64BasicAuth(String username, String password) {
-
-        String auth = username + ":" + password;
-        String basicAuth = "Basic " + android.util.Base64
-                .encodeToString(auth.getBytes(), android.util.Base64.NO_WRAP);
-
-        return basicAuth;
+        if (mProgress != null)
+            mProgress.setVisibility(View.GONE); // dismiss the progress
     }
 }
