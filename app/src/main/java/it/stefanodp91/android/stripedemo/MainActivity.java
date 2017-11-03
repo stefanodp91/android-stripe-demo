@@ -165,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Map<String, String> getHeaderMap() {
         Map<String, String> headerMap = new HashMap<>();
 
+        headerMap.put("Content-Type", "application/json");
         headerMap.put("x-api-key", "nTF2CgR5hmPIULE3C5Ty2KnmIlvqlbW1pvrxXmCf");
         headerMap.put("Accept", "image/*,application/hal+json,application/json,*/*");
 
