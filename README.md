@@ -14,8 +14,10 @@ the handler will return a response (positive or negative) of the payment
 
 ## CHANGELOG
 
-### 1.0.2
+### 1.0.3
+- fixed content input
 
+### 1.0.2
 - handled missing server exceptions
 - fixed stripe endpoint
 - fixed jobid and offerid
@@ -23,11 +25,9 @@ the handler will return a response (positive or negative) of the payment
 - support for minSdkVersion 14
 
 ### 1.0.1 
-
 - handled server exceptions
 
 ### 1.0 
-
 - released sample
 
 

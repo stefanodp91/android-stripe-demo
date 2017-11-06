@@ -1,7 +1,6 @@
 package it.stefanodp91.android.stripedemo;
 
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,6 +15,9 @@ import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
 import com.stripe.android.view.CardInputWidget;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +30,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = MainActivity.class.getName();
 
     // the croqqer-be stripe payment endpoint
-    private static final String BACKEND_URL = "https://api.croqqer.io/ch-dev/_logic/payment/stripe/";
+//    private static final String BACKEND_URL = "https://api.croqqer.io/ch-dev/_logic/payment/stripe/";
+
+    // local dev environment
+    private static final String BACKEND_URL = "http://192.168.1.107:8080/_logic/payment/stripe/";
 
     // the stripe publishable key
     // TODO: 18/10/17 replace with a public production key
@@ -36,8 +41,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // dummy auth data
     // TODO: 18/10/17 replace with valid user data
-    private static final String USERNAME = "dummyusername@dummyemail.com"; // user email
-    private static final String PASSWORD = "dummypassword"; // user password
+//    private static final String USERNAME = "dummyusername@dummyemail.com"; // user email
+//    private static final String PASSWORD = "dummypassword"; // user password
+
+    // local dev environment
+    private static final String USERNAME = "dev@address.com"; // user email
+    private static final String PASSWORD = "secret"; // user password
 
     // dummy payment data
     // TODO: 18/10/17 replace with valid job data
@@ -145,18 +154,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG, "basicAuth: " + basicAuth);
 
         // parameters for the POST request
-        Uri.Builder builder = new Uri.Builder()
-                .appendQueryParameter("stripeToken", token)
-                .appendQueryParameter("amount", String.valueOf(amount))
-                .appendQueryParameter("currency", currency)
-                .appendQueryParameter("jobid", JOB_ID)
-                .appendQueryParameter("offerid", OFFER_ID);
-        String queryParams = builder.build().getEncodedQuery();
+        JSONObject json = new JSONObject();
+        try {
+            json.put("stripeToken", token);
+            json.put("amount", amount);
+            json.put("currency", currency);
+            json.put("jobid", JOB_ID);
+            json.put("offerid", OFFER_ID);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            // TODO: 06/11/17
+        }
+
 
         Map<String, String> headers = new HashMap<>();
 
         // start the POST request
-        HttpPostTask httpPostTask = new HttpPostTask(queryParams, this);
+        HttpPostTask httpPostTask = new HttpPostTask(json.toString(), this);
         httpPostTask.setAuth(basicAuth); // set the encoded authorization
         httpPostTask.addHeaders(getHeaderMap());
         httpPostTask.execute(BACKEND_URL);
