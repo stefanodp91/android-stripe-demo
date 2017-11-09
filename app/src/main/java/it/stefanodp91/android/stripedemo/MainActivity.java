@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //    private static final String PASSWORD = "dummypassword"; // user password
 
     // local dev environment
-    private static final String USERNAME = "dev@address.com"; // user email
-    private static final String PASSWORD = "secret"; // user password
+    private static final String USERNAME = "dev@si.com"; // user email
+    private static final String PASSWORD = "p"; // user password
 
     // dummy payment data
     // TODO: 18/10/17 replace with valid job data
