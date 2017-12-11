@@ -30,10 +30,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = MainActivity.class.getName();
 
     // the croqqer-be stripe payment endpoint
-//    private static final String BACKEND_URL = "https://api.croqqer.io/ch-dev/_logic/payment/stripe/";
+    private static final String BACKEND_URL = "https://api.croqqer.io/ch-dev/_logic/payment/stripe/";
 
     // local dev environment
-    private static final String BACKEND_URL = "http://192.168.1.107:8080/_logic/payment/stripe/";
+//    private static final String BACKEND_URL = "http://192.168.1.28:8080/_logic/payment/stripe/";
 
     // the stripe publishable key
     // TODO: 18/10/17 replace with a public production key
@@ -46,12 +46,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // local dev environment
     private static final String USERNAME = "dev@si.com"; // user email
-    private static final String PASSWORD = "p"; // user password
+//    private static final String PASSWORD = "Maya134)slim"; // user password
+    private static final String PASSWORD = "x958bEcyLtN4"; // user password
 
     // dummy payment data
     // TODO: 18/10/17 replace with valid job data
-    private static final String JOB_ID = "59c0e76cabac3b089b066e80";
-    private static final String OFFER_ID = "59c1211ae03dd80005198700";
+    private static final String JOB_ID = "5a01ebbf7e62f7844f9e59ae";
+    private static final String OFFER_ID = "5a216bce7e62f7844f76da68";
 
     // dummy payment data
     // for amount see this link:
@@ -166,8 +167,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // TODO: 06/11/17
         }
 
-
-        Map<String, String> headers = new HashMap<>();
 
         // start the POST request
         HttpPostTask httpPostTask = new HttpPostTask(json.toString(), this);
